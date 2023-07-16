@@ -10,10 +10,14 @@ use std::{
     path, process,
 };
 
+fn i(msg: &str) -> String {
+    format!(" {} {}", "INPUT".blue(), msg)
+}
+
 fn subprocess_logger(prog: &str, args: Vec<&str>) -> Result<process::Output, io::Error> {
     let process = process::Command::new(prog).args(args).output();
 
-    fn print_output(output: &Vec<u8>) {
+    fn print_output(output: &[u8]) {
         String::from_utf8(output.to_vec())
             .unwrap()
             .lines()
@@ -25,10 +29,6 @@ fn subprocess_logger(prog: &str, args: Vec<&str>) -> Result<process::Output, io:
     print_output(&out.stdout);
     print_output(&out.stderr);
     Ok(out)
-}
-
-fn i(msg: &str) -> String {
-    format!(" {} {}", "INPUT".blue(), msg)
 }
 
 fn subprocess(prog: &str, args: Vec<&str>) -> Result<process::Output, io::Error> {
@@ -69,7 +69,7 @@ fn check_environment() -> String {
             subprocess_logger(py_cmd, vec!["-m", "pip", "install", "mcdreforged"]).unwrap();
         }
     }
-    return py_cmd.to_owned();
+    py_cmd.to_owned()
 }
 
 /// Create a folder for server install
@@ -81,7 +81,7 @@ fn mk_folder() {
         .default("minecraft_server".into())
         .interact_text()
         .unwrap();
-    let mut folder: String = String::from(re.replace(&input.trim().replace(" ", "_"), ""));
+    let mut folder: String = String::from(re.replace(&input.trim().replace(' ', "_"), ""));
 
     if folder.is_empty() {
         folder = String::from("minecraft_server");
@@ -126,23 +126,23 @@ fn server_mod_loader() -> i8 {
 
 ///Make a simple yes or no question
 fn simple_yes_no(question: &str, default_yes: bool) -> bool {
-    loop {
-        let choices = match default_yes {
-            true => "[Y/n]",
-            false => "[y/N]",
-        };
-        let input: String = Input::new()
-            .with_prompt(i(&format!("{} {}", question, choices)))
-            .allow_empty(true)
-            .interact_text()
-            .unwrap();
-        return match input.to_lowercase().trim() {
-            "" => default_yes,
-            "yes" | "y" => true,
-            "no" | "n" => false,
-            &_ => panic!(),
-        };
-    }
+    let choices = match default_yes {
+        true => "[Y/n]",
+        false => "[y/N]",
+    };
+    let input: String = Input::new()
+        .with_prompt(i(&format!("{} {}", question, choices)))
+        .allow_empty(true)
+        .interact_text()
+        .unwrap();
+    return match input.to_lowercase().trim() {
+        "" => default_yes,
+        "yes" | "y" => true,
+        "no" | "n" => false,
+        &_ => {
+            todo!()
+        }
+    };
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -203,7 +203,7 @@ fn vanilla_loader() -> [String; 2] {
             false => input.trim().to_owned(),
         };
         let tmp: Vec<i8> = minecraft
-            .split(".")
+            .split('.')
             .map(|x| x.parse::<i8>().unwrap())
             .collect();
         let major = tmp[1];
@@ -245,7 +245,7 @@ fn vanilla_loader() -> [String; 2] {
                 .downloads
                 .server
                 .url;
-            let server_file = server_url.split("/").collect::<Vec<&str>>()[6];
+            let server_file = server_url.split('/').collect::<Vec<&str>>()[6];
             let response = reqwest::blocking::get(&server_url)
                 .unwrap()
                 .bytes()
@@ -265,7 +265,7 @@ fn fabric_loader() -> [String; 2] {
     debug!("Fabric Loader setup");
     const FABRIC_URL: &str = "https://maven.fabricmc.net/net/fabricmc/fabric-installer/0.11.0/fabric-installer-0.11.0.jar";
 
-    let installer = FABRIC_URL.split("/").collect::<Vec<&str>>()[7];
+    let installer = FABRIC_URL.split('/').collect::<Vec<&str>>()[7];
     info!("Downloading fabric loader...");
     let response = reqwest::blocking::get(FABRIC_URL).unwrap().bytes().unwrap();
     let mut file = fs::File::create(installer).unwrap();
@@ -319,16 +319,16 @@ fn fabric_loader() -> [String; 2] {
     info!("Fabric server installation complete");
     fs::remove_file(installer).unwrap();
 
-    return [String::from("fabric-server-launch"), minecraft];
+    [String::from("fabric-server-launch"), minecraft]
 }
 
 /// Run function to each loader
 fn loader_setup(loader: i8) -> [String; 2] {
-    return match loader {
+    match loader {
         1 => vanilla_loader(),
         2 => fabric_loader(),
         _ => panic!(),
-    };
+    }
 }
 
 /// Return a string with the launch command
@@ -337,7 +337,7 @@ fn start_command(jar_name: String) -> String {
 }
 
 fn line_change(file: &str, line: usize, str: &str) {
-    let mut data: Vec<String> = io::BufReader::new(fs::File::open(&file).unwrap())
+    let mut data: Vec<String> = io::BufReader::new(fs::File::open(file).unwrap())
         .lines()
         .map(|x| x.unwrap())
         .collect();
@@ -345,7 +345,7 @@ fn line_change(file: &str, line: usize, str: &str) {
         true => data[line] = String::from(str),
         false => panic!(""),
     }
-    let mut f = fs::File::create(&file).unwrap();
+    let mut f = fs::File::create(file).unwrap();
     for line in data {
         writeln!(f, "{}", line).unwrap();
     }
@@ -354,7 +354,7 @@ fn line_change(file: &str, line: usize, str: &str) {
 /// Function to install and configure MCDReforged
 fn mcdr_setup(loader: i8, py_cmd: &str) -> Result<String, io::Error> {
     info!("Using MCDReforged");
-    subprocess_logger(&py_cmd, vec!["-m", "mcdreforged", "init"]).unwrap();
+    subprocess_logger(py_cmd, vec!["-m", "mcdreforged", "init"]).unwrap();
     let mut path = current_dir()?;
     path.push("server");
     set_current_dir(path)?;
@@ -370,7 +370,7 @@ fn mcdr_setup(loader: i8, py_cmd: &str) -> Result<String, io::Error> {
         .interact_text()
         .unwrap();
     let nickanme = input.trim();
-    if nickanme.is_empty() == false {
+    if !nickanme.is_empty() {
         info!("Nickname to set: {}", nickanme);
         line_change("permission.yml", 13, &format!("- {}", nickanme));
     }
@@ -405,7 +405,7 @@ fn post_setup(
         false => start_command(jar_file.unwrap()),
     });
 
-    let tmp: Vec<i8> = mc.split(".").map(|x| x.parse::<i8>().unwrap()).collect();
+    let tmp: Vec<i8> = mc.split('.').map(|x| x.parse::<i8>().unwrap()).collect();
     let major = tmp[1];
     let minor = match tmp.len() == 3 {
         true => tmp[2],
