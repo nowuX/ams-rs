@@ -1,0 +1,31 @@
+name: Rust Build
+
+on:
+  push:
+    branches: ['main']
+    paths: ['.github/workflows/build.yml','src/**', 'Cargo.toml']
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build in Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3      
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build --release --verbose
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ams-rs stable-x86_64-pc-windows-msvc
+          path: target/release/ams-rs.exe
+  test:
+    name: Test in Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3      
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test
+        run: cargo test --verbose
