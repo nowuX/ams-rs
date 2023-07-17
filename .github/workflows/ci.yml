@@ -54,10 +54,9 @@ jobs:
           del rustup-init.exe
           rustup target add ${{ matrix.target }}
         shell: powershell      
-        
-      - name: Add mingw32 to path for i
       - name: Build
         run: cargo build --verbose
+
       - name: Ls
         run: ls ./target/debug
       - uses: actions/upload-artifact@v3
