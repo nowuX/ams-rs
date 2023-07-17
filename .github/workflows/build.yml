@@ -3,7 +3,7 @@ name: Rust Build
 on:
   push:
     branches: ['main']
-    paths: ['src/**']
+    paths: ['.github/workflows/build.yml','src/**', 'Cargo.toml']
 
 env:
   CARGO_TERM_COLOR: always
