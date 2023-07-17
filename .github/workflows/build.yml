@@ -1,0 +1,23 @@
+name: Rust Build
+
+on:
+  push:
+    branches: ['main']
+    paths: ['src/**']
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build for Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3      
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build --verbose
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ams-rs
+          path: target/debug/ams-rs.exe
