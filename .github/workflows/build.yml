@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    name: Build for Windows
+    name: Build in Windows
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3      
@@ -21,3 +21,11 @@ jobs:
         with:
           name: ams-rs stable-x86_64-pc-windows-msvc
           path: target/release/ams-rs.exe
+  test:
+    name: Test in Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3      
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test
+        run: cargo test --verbose
