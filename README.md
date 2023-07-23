@@ -12,7 +12,7 @@ Rust CLI program 🦀 that makes it easier for me to set up minecraft servers.
 Run the executable which will check the version of Python and Java, the it will ask you about settings for the minecraft server like version, mod loader, mcdr.
 
 ### Features
-- [X] [MCDReforged](https://github.com/Fallen-Breath/MCDReforged)
+- [ ] [MCDReforged](https://github.com/Fallen-Breath/MCDReforged) ⚠️broken
 - [X] [Vanilla](https://www.minecraft.net/) 1.2.5 - 1.20+
 - [X] [Fabric](https://fabricmc.net/) 1.14 - 1.20+
 
