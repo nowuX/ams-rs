@@ -89,6 +89,8 @@ fn mk_folder() {
     if path::Path::new(&folder).exists() {
         warn!("Folder already exists");
         process::exit(0);
+        // hola que tal
+        // xd
     }
     match fs::create_dir(path::Path::new(&folder)) {
         Ok(_) => {
@@ -145,6 +147,8 @@ fn simple_yes_no(question: &str, default_yes: bool) -> bool {
     };
 }
 
+// otro comentario
+//
 #[derive(Debug, Deserialize, Serialize)]
 struct Latest {
     release: String,
